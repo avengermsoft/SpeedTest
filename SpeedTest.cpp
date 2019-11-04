@@ -208,10 +208,10 @@ double SpeedTest::execute(const ServerInfo &server, const TestConfig &config, co
 
                 size_t skip = 0;
                 size_t drop = 0;
-                if (partial_results.size() >= 10){
+                /*if (partial_results.size() >= 10){
                     skip = partial_results.size() / 4;
                     drop = 2;
-                }
+                } -- */
 
                 size_t iter = 0;
                 double real_sum = 0;
@@ -496,7 +496,7 @@ const ServerInfo SpeedTest::findBestServerWithin(const std::vector<ServerInfo> &
     int i = sample_size;
     ServerInfo bestServer = serverList[0];
 
-    latency = INT_MAX;
+    latency = LONG_MAX;
 
     for (auto &server : serverList){
         auto client = SpeedTestClient(server);
@@ -535,7 +535,7 @@ bool SpeedTest::testLatency(SpeedTestClient &client, const int sample_size, long
     if (!client.connect()){
         return false;
     }
-    latency = INT_MAX;
+    latency = LONG_MAX;
     long temp_latency = 0;
     for (int i = 0; i < sample_size; i++){
         if (client.ping(temp_latency)){
