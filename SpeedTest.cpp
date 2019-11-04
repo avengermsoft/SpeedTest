@@ -80,7 +80,6 @@ bool SpeedTest::setServer(ServerInfo& server){
     }
     client.close();
     return true;
-
 }
 
 bool SpeedTest::downloadSpeed(const ServerInfo &server, const TestConfig &config, double& result, std::function<void(bool)> cb) {
@@ -121,7 +120,7 @@ bool SpeedTest::jitter(const ServerInfo &server, long& result, const int sample)
         return false;
     }
 
-    result = (long) std::floor(current_jitter / sample);
+    result = (long) std::ceil(current_jitter / sample);
     return true;
 }
 
@@ -236,7 +235,7 @@ double SpeedTest::execute(const ServerInfo &server, const TestConfig &config, co
 
     workers.clear();
 
-    return overall_speed / 1000 / 1000;
+    return overall_speed / 1024 / 1024;
 }
 
 template<typename T>
@@ -549,4 +548,3 @@ bool SpeedTest::testLatency(SpeedTestClient &client, const int sample_size, long
     }
     return true;
 }
-

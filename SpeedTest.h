@@ -65,5 +65,4 @@ private:
 
 };
 
-
 #endif //SPEEDTEST_SPEEDTEST_H

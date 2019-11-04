@@ -16,6 +16,7 @@ typedef struct program_options_t {
     bool upload   = false;
     bool share    = false;
     std::string selected_server = "";
+    int selected_serverid = -1;
     OutputType output_type = OutputType::verbose;
 } ProgramOptions;
 
@@ -26,11 +27,12 @@ static struct option CmdLongOptions[] = {
         {"upload",      no_argument,       0, 'u' },
         {"share",       no_argument,       0, 's' },
         {"test-server", required_argument, 0, 't' },
+        {"serverid", required_argument, 0, 'i' },
         {"output",      required_argument, 0, 'o' },
         {0,             0,                 0,  0  }
 };
 
-const char *optStr = "hldusqt:o:";
+const char *optStr = "hldust:i:o:";
 
 bool ParseOptions(const int argc, const char **argv, ProgramOptions& options){
     int long_index =0;
@@ -55,6 +57,9 @@ bool ParseOptions(const int argc, const char **argv, ProgramOptions& options){
             case 't':
                 options.selected_server.append(optarg);
                 break;
+            case 'i':
+                options.selected_serverid = std::atoi((char*)optarg);
+                break;
             case 'o':
                 if (strcmp(optarg, "verbose") == 0)
                     options.output_type = OutputType::verbose;
@@ -74,6 +79,5 @@ bool ParseOptions(const int argc, const char **argv, ProgramOptions& options){
     }
     return true;
 }
-
 
 #endif //SPEEDTEST_CMDOPTIONS_H

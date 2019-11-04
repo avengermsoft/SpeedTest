@@ -264,7 +264,3 @@ bool SpeedTestClient::writeLine(int &fd, const std::string &buffer) {
     auto n = write(fd, buff_copy.c_str(), len);
     return n == len;
 }
-
-
-
-

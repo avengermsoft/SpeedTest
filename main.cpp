@@ -24,6 +24,7 @@ void usage(const char* name){
     std::cerr << "  --upload                    Perform upload test only. It includes latency test\n";
     std::cerr << "  --share                     Generate and provide a URL to the speedtest.net share results image\n";
     std::cerr << "  --test-server host:port     Run speed test against a specific server\n";
+    std::cerr << "  --serverid                   Run speed test against a specific serverid\n";
     std::cerr << "  --output verbose|text       Set output type. Default: verbose\n";
 }
 
@@ -53,7 +54,6 @@ int main(const int argc, const char **argv) {
     auto sp = SpeedTest(SPEED_TEST_MIN_SERVER_VERSION);
     IPInfo info;
     ServerInfo serverInfo;
-    ServerInfo serverQualityInfo;
 
     if (!sp.ipInfo(info)){
         std::cerr << "Unable to retrieve your IP info. Try again later" << std::endl;
@@ -65,18 +65,18 @@ int main(const int argc, const char **argv) {
                   << " ( " << info.isp << " ) "
                   << "Location: [" << info.lat << ", " << info.lon << "]" << std::endl;
     } else {
-        std::cout << "IP=" << info.ip_address << std::endl;
-        std::cout << "IP_LAT=" << info.lat << std::endl;
-        std::cout << "IP_LON=" << info.lon << std::endl;
-        std::cout << "PROVIDER=" << info.isp << std::endl;
+        std::cout << info.ip_address << ",";
+        std::cout << info.lat << ",";
+        std::cout << info.lon << ",";
+        std::cout << info.isp << ",";
     }
 
     auto serverList = sp.serverList();
 
-    if (programOptions.selected_server.empty()){
+    if ( programOptions.selected_server.empty() && programOptions.selected_serverid == -1 ){
         if (programOptions.output_type == OutputType::verbose)
             std::cout << "Finding fastest server... " << std::flush;
-        
+
         if (serverList.empty()){
             std::cerr << "Unable to download server list. Try again later" << std::endl;
             return EXIT_FAILURE;
@@ -99,32 +99,37 @@ int main(const int argc, const char **argv) {
                       << " (" << serverInfo.distance << " km from you): "
                       << sp.latency() << " ms" << std::endl;
         } else {
-            std::cout << "TEST_SERVER_HOST=" << serverInfo.host << std::endl;
-            std::cout << "TEST_SERVER_DISTANCE=" << serverInfo.distance << std::endl;
-
+            std::cout << serverInfo.id << ",";
+            std::cout << serverInfo.host << ",";
+            std::cout << serverInfo.distance << ",";
         }
 
     } else {
 
         serverInfo.host.append(programOptions.selected_server);
-        sp.setServer(serverInfo);
 
         for (auto &s : serverList) {
-            if (s.host == serverInfo.host)
-                serverInfo.id = s.id;
+            if ( (programOptions.selected_serverid != -1 && programOptions.selected_serverid == s.id) || s.host == serverInfo.host ) {
+                serverInfo = s;
+                break;
+            }
         }
+
+        sp.setServer(serverInfo);
 
         if (programOptions.output_type == OutputType::verbose)
             std::cout << "Selected server: " << serverInfo.host << std::endl;
         else {
-            std::cout << "TEST_SERVER_HOST=" << serverInfo.host << std::endl;
+            std::cout << serverInfo.id << ",";
+            std::cout << serverInfo.host << ",";
+            std::cout << serverInfo.distance << ",";
         }
     }
 
     if (programOptions.output_type == OutputType::verbose)
         std::cout << "Ping: " << sp.latency() << " ms." << std::endl;
     else
-        std::cout << "LATENCY=" << sp.latency() << std::endl;
+        std::cout << sp.latency() << ",";
 
     long jitter = 0;
     if (programOptions.output_type == OutputType::verbose)
@@ -133,7 +138,7 @@ int main(const int argc, const char **argv) {
         if (programOptions.output_type == OutputType::verbose)
             std::cout << jitter << " ms." << std::endl;
         else
-            std::cout << "JITTER=" << jitter << std::endl;
+            std::cout << jitter << ",";
     } else {
         std::cerr << "Jitter measurement is unavailable at this time." << std::endl;
     }
@@ -182,10 +187,9 @@ int main(const int argc, const char **argv) {
                 std::cout << std::setprecision(2);
                 std::cout << downloadSpeed << " Mbit/s" << std::endl;
             } else {
-                std::cout << "DOWNLOAD_SPEED=";
                 std::cout << std::fixed;
                 std::cout << std::setprecision(2);
-                std::cout << downloadSpeed << std::endl;
+                std::cout << downloadSpeed << ",";
             }
 
         } else {
@@ -212,10 +216,9 @@ int main(const int argc, const char **argv) {
             std::cout << std::setprecision(2);
             std::cout << uploadSpeed << " Mbit/s" << std::endl;
         } else {
-            std::cout << "UPLOAD_SPEED=";
             std::cout << std::fixed;
             std::cout << std::setprecision(2);
-            std::cout << uploadSpeed << std::endl;
+            std::cout << uploadSpeed;
         }
 
     } else {

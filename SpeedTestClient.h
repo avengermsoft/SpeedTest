@@ -40,4 +40,5 @@ private:
 };
 
 typedef bool (SpeedTestClient::*opFn)(const long size, const long chunk_size, long &millisec);
+
 #endif //SPEEDTEST_SPEEDTESTCLIENT_H

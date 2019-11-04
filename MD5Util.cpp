@@ -19,4 +19,3 @@ std::string MD5Util::hexDigest(const std::string &str) {
 
     return std::string(hexDigest);
 }
-

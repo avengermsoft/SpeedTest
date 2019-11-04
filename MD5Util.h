@@ -19,5 +19,4 @@ public:
     static std::string hexDigest(const std::string &str);
 };
 
-
 #endif //SPEEDTEST_MD5UTIL_H
