@@ -24,7 +24,7 @@ void usage(const char* name){
     std::cerr << "  --upload                    Perform upload test only. It includes latency test\n";
     std::cerr << "  --share                     Generate and provide a URL to the speedtest.net share results image\n";
     std::cerr << "  --test-server host:port     Run speed test against a specific server\n";
-    std::cerr << "  --serverid                   Run speed test against a specific serverid\n";
+    std::cerr << "  --serverid                  Run speed test against a specific serverid\n";
     std::cerr << "  --output verbose|text       Set output type. Default: verbose\n";
 }
 
@@ -100,7 +100,7 @@ int main(const int argc, const char **argv) {
                       << sp.latency() << " ms" << std::endl;
         } else {
             std::cout << serverInfo.id << ",";
-            std::cout << serverInfo.host << ",";
+            std::cout << serverInfo.sponsor << ",";
             std::cout << serverInfo.distance << ",";
         }
 
@@ -121,7 +121,7 @@ int main(const int argc, const char **argv) {
             std::cout << "Selected server: " << serverInfo.host << std::endl;
         else {
             std::cout << serverInfo.id << ",";
-            std::cout << serverInfo.host << ",";
+            std::cout << serverInfo.sponsor << ",";
             std::cout << serverInfo.distance << ",";
         }
     }
@@ -218,7 +218,7 @@ int main(const int argc, const char **argv) {
         } else {
             std::cout << std::fixed;
             std::cout << std::setprecision(2);
-            std::cout << uploadSpeed;
+            std::cout << uploadSpeed << std::endl;
         }
 
     } else {

@@ -27,7 +27,7 @@ static struct option CmdLongOptions[] = {
         {"upload",      no_argument,       0, 'u' },
         {"share",       no_argument,       0, 's' },
         {"test-server", required_argument, 0, 't' },
-        {"serverid", required_argument, 0, 'i' },
+        {"serverid",    required_argument, 0, 'i' },
         {"output",      required_argument, 0, 'o' },
         {0,             0,                 0,  0  }
 };
