@@ -70,7 +70,7 @@ bool SpeedTestClient::ping(long &millisec) {
     std::stringstream cmd;
     std::string reply;
 
-    auto start = std::chrono::steady_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
     cmd << "PING " << start.time_since_epoch().count();
 
     if (!SpeedTestClient::writeLine(mSocketFd, cmd.str())){
@@ -79,7 +79,7 @@ bool SpeedTestClient::ping(long &millisec) {
 
     if (SpeedTestClient::readLine(mSocketFd, reply)){
         if (reply.substr(0, 5) == "PONG "){
-            auto stop = std::chrono::steady_clock::now();
+            auto stop = std::chrono::high_resolution_clock::now();
             millisec = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
             return true;
         }
@@ -98,13 +98,12 @@ bool SpeedTestClient::download(const long size, const long chunk_size, long &mil
         return false;
     }
 
-
     char *buff = new char[chunk_size];
     for (size_t i = 0; i < static_cast<size_t>(chunk_size); i++)
         buff[i] = '\0';
 
     long missing = 0;
-    auto start = std::chrono::steady_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
     while (missing != size){
         auto current = read(mSocketFd, buff, static_cast<size_t>(chunk_size));
 
@@ -115,7 +114,7 @@ bool SpeedTestClient::download(const long size, const long chunk_size, long &mil
         missing += current;
     }
 
-    auto stop = std::chrono::steady_clock::now();
+    auto stop = std::chrono::high_resolution_clock::now();
     millisec = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
     delete[] buff;
     return true;
@@ -127,21 +126,18 @@ bool SpeedTestClient::upload(const long size, const long chunk_size, long &milli
     cmd << "UPLOAD " << size << "\n";
     auto cmd_len = cmd.str().length();
 
-    char *buff = new char[chunk_size];
-    for(size_t i = 0; i < static_cast<size_t>(chunk_size); i++)
-        buff[i] = static_cast<char>(rand() % 256);
-
-    long missing = size;
-    auto start = std::chrono::steady_clock::now();
-
     if (!SpeedTestClient::writeLine(mSocketFd, cmd.str())){
-        delete[] buff;
         return false;
     }
 
+    char *buff = new char[chunk_size];
+    for (size_t i = 0; i < static_cast<size_t>(chunk_size); i++)
+        buff[i] = static_cast<char>(rand() % 256);
+
+    long missing = size;
+    auto start = std::chrono::high_resolution_clock::now();
     ssize_t w = cmd_len;
     missing -= w;
-
     while(missing > 0){
         if (missing - chunk_size > 0){
             w = write(mSocketFd, buff, static_cast<size_t>(chunk_size));
@@ -166,7 +162,7 @@ bool SpeedTestClient::upload(const long size, const long chunk_size, long &milli
         delete[] buff;
         return false;
     }
-    auto stop = std::chrono::steady_clock::now();
+    auto stop = std::chrono::high_resolution_clock::now();
 
     std::stringstream ss;
     ss << "OK " << size << " ";

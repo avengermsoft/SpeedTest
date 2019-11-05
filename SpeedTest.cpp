@@ -103,7 +103,7 @@ const long &SpeedTest::latency() {
 bool SpeedTest::jitter(const ServerInfo &server, long& result, const int sample) {
     auto client = SpeedTestClient(server);
     double current_jitter = 0;
-    long previous_ms =  LONG_MAX;
+    long previous_ms = LONG_MAX;
     if (client.connect()){
         for (int i = 0; i < sample; i++){
             long ms = 0;
@@ -182,7 +182,7 @@ double SpeedTest::execute(const ServerInfo &server, const TestConfig &config, co
             if (spClient.connect()) {
                 long total_size = 0;
                 long total_time = 0;
-                auto start = std::chrono::steady_clock::now();
+                auto start = std::chrono::high_resolution_clock::now();
                 std::vector<double> partial_results;
                 while (curr_size < max_size){
                     long op_time = 0;
@@ -198,7 +198,7 @@ double SpeedTest::execute(const ServerInfo &server, const TestConfig &config, co
                             cb(false);
                     }
                     curr_size += incr_size;
-                    auto stop = std::chrono::steady_clock::now();
+                    auto stop = std::chrono::high_resolution_clock::now();
                     if (std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count() > config.min_test_time_ms)
                         break;
                 }
