@@ -23,7 +23,7 @@ public:
 	bool connect();
 	void close();
 	bool ping(long &millisec);
-	bool download(const long size, const long chunk_size, long &millisec)
+	bool download(const long size, const long chunk_size, long &millisec);
 	bool upload(const long size, const long chunk_size, long &millisec);
 	float version();
 	const std::pair<std::string, int> hostport();

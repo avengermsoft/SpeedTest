@@ -51,13 +51,14 @@ void SpeedTestClient::close() {
 // It executes PING command
 bool SpeedTestClient::ping(long &millisec) {
 	millisec = LONG_MAX;
+	auto start = std::chrono::high_resolution_clock::now();
 	std::stringstream cmd;
 	cmd << "PING " << start.time_since_epoch().count() << "\n";
 	if (!SpeedTestClient::writeLine(mSocketFd, cmd.str()))
 		return false;
 
 	std::string reply;
-	auto start = std::chrono::high_resolution_clock::now();
+	//start = std::chrono::high_resolution_clock::now();
 	if (SpeedTestClient::readLine(mSocketFd, reply)) {
 		if (reply.substr(0, 5) == "PONG ") {
 			auto stop = std::chrono::high_resolution_clock::now();
