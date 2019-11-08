@@ -6,7 +6,10 @@
 #include <netdb.h>
 #include "SpeedTestClient.h"
 
-SpeedTestClient::SpeedTestClient(const ServerInfo &serverInfo): mServerInfo(serverInfo), mSocketFd(0), mServerVersion(-1.0) {
+SpeedTestClient::SpeedTestClient(const ServerInfo &serverInfo): 
+	mServerInfo(serverInfo), 
+	mSocketFd(0), 
+	mServerVersion(-1.0) {
 }
 
 SpeedTestClient::~SpeedTestClient() {
