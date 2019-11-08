@@ -117,15 +117,15 @@ bool SpeedTest::share(const ServerInfo &server, std::string &image_url) {
 
 	std::stringstream hash;
 	hash << std::setprecision(0) << std::fixed << mLatency
-	<< "-" << std::setprecision(2) << std::fixed << (mUploadSpeed * 1024)
-	<< "-" << std::setprecision(2) << std::fixed << (mDownloadSpeed * 1024)
+	<< "-" << std::setprecision(2) << std::fixed << (mUploadSpeed * 1000)
+	<< "-" << std::setprecision(2) << std::fixed << (mDownloadSpeed * 1000)
 	<< "-" << SPEED_TEST_API_KEY;
 	std::string hex_digest = MD5Util::hexDigest(hash.str());
 
 	std::stringstream post_data;
 	post_data << "ping=" << std::setprecision(0) << std::fixed << mLatency << "&";
-	post_data << "upload=" << std::setprecision(2) << std::fixed << (mUploadSpeed * 1024) << "&";
-	post_data << "download=" << std::setprecision(2) << std::fixed << (mDownloadSpeed * 1024) << "&";
+	post_data << "upload=" << std::setprecision(2) << std::fixed << (mUploadSpeed * 1000) << "&";
+	post_data << "download=" << std::setprecision(2) << std::fixed << (mDownloadSpeed * 1000) << "&";
 	post_data << "pingselect=1&";
 	post_data << "recommendedserverid=" << server.id << "&";
 	post_data << "accuracy=1&";
@@ -237,7 +237,7 @@ T SpeedTest::harversine(std::pair<T, T> n1, std::pair<T, T> n2) {
 
 CURLcode SpeedTest::httpRequest(const std::string &url, const std::string &postdata, std::stringstream &ss, CURL *handler, long timeout) {
 	CURLcode code(CURLE_FAILED_INIT);
-	CURL* curl = handler == nullptr ? curl_easy_init() : handler;
+	CURL *curl = handler == nullptr ? curl_easy_init() : handler;
 
 	if (curl) {
 		if (CURLE_OK == (code = curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writeFunc))
@@ -250,8 +250,9 @@ CURLcode SpeedTest::httpRequest(const std::string &url, const std::string &postd
 		 && (postdata.empty() || CURLE_OK == (code = curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postdata.c_str())))
 		) {
 			code = curl_easy_perform(curl);
-		} else if (handler == nullptr) {
-			curl_easy_cleanup(handler);
+		}
+		if (handler == nullptr) {
+			curl_easy_cleanup(curl);
 		}
 	}
 	return code;
@@ -355,7 +356,7 @@ bool SpeedTest::fetchServers(const std::string &url, std::vector<ServerInfo> &ta
 	std::string postdata = "";
 	std::stringstream rs;
 	CURL *c = curl_easy_init();
-	auto code = httpRequest(SPEED_TEST_API_URL, postdata, rs, c);
+	auto code = httpRequest(url, postdata, rs, c);
 	if (code == CURLE_OK) {
 		int req_status = 0;
 		curl_easy_getinfo(c, CURLINFO_HTTP_CODE, &req_status);
