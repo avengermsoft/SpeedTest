@@ -412,9 +412,11 @@ bool SpeedTest::fetchServers(const std::string &url, std::vector<ServerInfo> &ta
 		}
 	}
 	curl_easy_cleanup(c);
-	std::sort(target.begin(), target.end(), [](const ServerInfo &a, const ServerInfo &b) -> bool {
-		return a.distance < b.distance;
-	});
+	auto DistanceComparer = [](const ServerInfo &a, const ServerInfo &b) -> bool {
+		const bool ret = (a.distance - b.distance) < 0;
+		return ret;
+	};
+	std::sort(target.begin(), target.end(), DistanceComparer);
 	return true;
 }
 
